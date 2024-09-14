@@ -28,7 +28,14 @@ public class ProductService
 
     public Task CreateProductAsync(Product product)
     {
-        throw new NotImplementedException();
+        products.Add(product);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteProductAsync(Product product)
+    {
+        products.Remove(product);
+
         return Task.CompletedTask;
     }
 }
