@@ -1,0 +1,40 @@
+﻿@page "/editable-grid"
+
+@inherits EditableGridBase
+@rendermode InteractiveServer
+
+<h3>Editable Products Grid</h3>
+
+<RadzenDataGrid @ref="@Grid" Data="@Products" TItem="Product" AllowFiltering="true" AllowPaging="true" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                RowUpdate="@OnUpdateRow" 
+                RowCreate="@OnCreateRow" 
+                >
+    <Columns>
+        <RadzenDataGridColumn TItem="Product" Property="Id" Title="ID" />
+        <RadzenDataGridColumn TItem="Product" Property="Name" Title="Name">
+            <EditTemplate Context="product">
+                <RadzenTextBox @bind-Value="product.Name" Style="width:100%" Name="Name" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Product" Property="Price" Title="Price">
+            <EditTemplate Context="product">
+                <RadzenNumeric @bind-Value="product.Price" Style="width:100%" Name="Price" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Product" Property="Quantity" Title="Quantity">
+            <EditTemplate Context="product">
+                <RadzenNumeric @bind-Value="product.Quantity" Style="width:100%" Name="Quantity" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Product" Context="product" Title="Edit">
+            <Template Context="product">
+                <RadzenButton Size="ButtonSize.Small" Icon="edit" Click="@((args) => Grid.EditRow(product))" />
+            </Template>
+            <EditTemplate Context="product">
+                <RadzenButton Size="ButtonSize.Small" Icon="save" Click="@((args) => Grid.UpdateRow(product))" />
+                <RadzenButton Size="ButtonSize.Small" Icon="cancel" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => Grid.CancelEditRow(product))" Style="margin-left: 5px;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
