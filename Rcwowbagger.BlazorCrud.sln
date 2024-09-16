@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rcwowbagger.BlazorCrud.Shar
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8AD76929-C38B-4021-9754-F2D8DCF5185F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rcwowbagger.BlazorCrudApi", "Rcwowbagger.BlazorCrudApi\Rcwowbagger.BlazorCrudApi.csproj", "{9333EB4B-9A41-464B-BBC4-72999DABFB1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rcwowbagger.BlazorCrudApi", "Rcwowbagger.BlazorCrudApi\Rcwowbagger.BlazorCrudApi.csproj", "{9333EB4B-9A41-464B-BBC4-72999DABFB1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{333C9D91-94D2-4DBA-ABBA-2273B087E416}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
