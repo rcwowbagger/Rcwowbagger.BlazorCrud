@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Radzen;
+using Rcwowbagger.BlazorCrud.Auth;
 using Rcwowbagger.BlazorCrud.Components;
+using Rcwowbagger.BlazorCrud.DbPersistence;
+using Rcwowbagger.BlazorCrud.Interfaces;
 using Rcwowbagger.BlazorCrud.Services;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -41,7 +44,7 @@ namespace Rcwowbagger.BlazorCrud
 
             builder.Services.AddCascadingAuthenticationState();
 
-            builder.Services.AddSingleton<ProductService>();
+            builder.Services.AddScoped<IDataRepository>((services) => new DatabaseRepository(services.GetService<IConfiguration>().GetSection("Database").Get<DatabaseSettings>()));
             builder.Services.AddRadzenComponents();
 
             builder.Services

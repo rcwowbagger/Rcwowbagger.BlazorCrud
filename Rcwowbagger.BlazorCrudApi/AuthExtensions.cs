@@ -12,19 +12,20 @@ public static class AuthExtensions
 
         var clientHandlerService = services.BuildServiceProvider().GetService<ClientHandlerService>();
         //...
-        services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
-        {
-            options.Events.OnTokenValidated = async context =>
-            {
-                var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-                context.Success();
+        //services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
+        //{
+        //    options.Events.OnTokenValidated = async context =>
+        //    {
+        //        var tokenAcquisition = context.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
+        //        context.Success();
 
-                clientHandlerService.
-                // Adds the token to the cache, and also handles the incremental consent and claim challenges
-                tokenAcquisition.AddAccountToCacheFromJwt(context, scopes);
-                await Task.FromResult(0);
-            };
-        });
+        //        clientHandlerService.
+        //        // Adds the token to the cache, and also handles the incremental consent and claim challenges
+        //        tokenAcquisition.AddAccountToCacheFromJwt(context, scopes);
+        //        await Task.FromResult(0);
+        //    };
+        //});
+        
         return services;
     }
 }

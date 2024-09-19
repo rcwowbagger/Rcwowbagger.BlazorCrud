@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Identity.Web;
 using Rcwowbagger.BlazorCrudApi.Services;
 
@@ -11,8 +12,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+        //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+        builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi()
+                        .AddMicrosoftGraph(builder.Configuration.GetSection("DownstreamApi"))
+                        .AddInMemoryTokenCaches();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,7 +39,6 @@ public class Program
         app.UseAuthentication();
 
         app.UseAuthorization();
-
 
         app.MapControllers();
 

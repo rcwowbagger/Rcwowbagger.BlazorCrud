@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Rcwowbagger.BlazorCrud;
+namespace Rcwowbagger.BlazorCrud.Auth;
 
 internal static partial class CookieOidcServiceCollectionExtensions
 {

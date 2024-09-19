@@ -1,40 +1,109 @@
 ﻿@page "/editable-grid"
+@using Rcwowbagger.BlazorCrud.Interfaces.Models
 
-@inherits EditableGridBase
+@inherits EditableGridBase<ProductDto>
 @rendermode InteractiveServer
 
-<h3>Editable Products Grid</h3>
 
-<RadzenDataGrid @ref="@Grid" Data="@Products" TItem="Product" AllowFiltering="true" AllowPaging="true" AllowSorting="true" EditMode="DataGridEditMode.Single"
-                RowUpdate="@OnUpdateRow" 
-                RowCreate="@OnCreateRow" 
-                >
+<style>
+    .rz-grid-table {
+        width: unset;
+    }
+</style>
+
+<RadzenCard Variant="Variant.Outlined" class="rz-my-4">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+        <div>Edit Mode:</div>
+        <RadzenSelectBar @bind-Value="@editMode" TextProperty="Text" ValueProperty="Value"
+                         Data="@(Enum.GetValues(typeof(DataGridEditMode)).Cast<DataGridEditMode>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small"
+                         Disabled="@(editMode == DataGridEditMode.Multiple && ItemsToInsert.Any())" />
+    </RadzenStack>
+</RadzenCard>
+
+<RadzenDataGrid @ref="@ItemGrid" AllowAlternatingRows="false" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="@editMode"
+                Data="@Items" TItem="ProductDto" RowUpdate="@OnUpdateRowAsync" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
+    <HeaderTemplate>
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Order" Click="@InsertRow" Disabled="@(editMode == DataGridEditMode.Single && ItemsToInsert.Any())" />
+    </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="Product" Property="Id" Title="ID" />
-        <RadzenDataGridColumn TItem="Product" Property="Name" Title="Name">
+        <RadzenDataGridColumn Property="ProductId" Title="Product Id" Width="120px" Frozen="true" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Name" Title="Name" Width="120px" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Price" Title="Price" Width="120px" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Quantity" Title="Quantity" Width="120px" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Date" Title="Date" Width="120px" ></RadzenDataGridColumn>
+      @*   <RadzenDataGridColumn Property="Name" Title="Name" Width="280px">
             <EditTemplate Context="product">
-                <RadzenTextBox @bind-Value="product.Name" Style="width:100%" Name="Name" />
+                <RadzenDropDown @bind-Value="product.Name" Data="@Products" TextProperty="@nameof(Product.Name)" ValueProperty="@nameof(Product.Name)" Style="width:100%; display: block;"
+                                InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select customer" }})" />
             </EditTemplate>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="Product" Property="Price" Title="Price">
-            <EditTemplate Context="product">
-                <RadzenNumeric @bind-Value="product.Price" Style="width:100%" Name="Price" />
-            </EditTemplate>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="Product" Property="Quantity" Title="Quantity">
-            <EditTemplate Context="product">
-                <RadzenNumeric @bind-Value="product.Quantity" Style="width:100%" Name="Quantity" />
-            </EditTemplate>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="Product" Context="product" Title="Edit">
+        </RadzenDataGridColumn> 
+         <RadzenDataGridColumn Property="Employee.LastName" Title="Employee" Width="220px">
             <Template Context="product">
-                <RadzenButton Size="ButtonSize.Small" Icon="edit" Click="@((args) => Grid.EditRow(product))" />
+                <RadzenImage Path="@product.Employee?.Photo" Style="width: 32px; height: 32px;" class="rz-border-radius-4 rz-me-2" AlternateText="@(product.Employee?.FirstName + " " + product.Employee?.LastName)" />
+                @product.Employee?.FirstName @product.Employee?.LastName
             </Template>
             <EditTemplate Context="product">
-                <RadzenButton Size="ButtonSize.Small" Icon="save" Click="@((args) => Grid.UpdateRow(product))" />
-                <RadzenButton Size="ButtonSize.Small" Icon="cancel" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => Grid.CancelEditRow(product))" Style="margin-left: 5px;" />
+                <RadzenDropDown @bind-Value="product.EmployeeID" Data="@employees" ValueProperty="EmployeeID" Style="width:100%; display: block;"
+                                InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select employee" }})">
+                    <Template>
+                        <RadzenImage Path="@context.Photo" Style="width: 20px; height: 20px;" class="rz-border-radius-4 rz-me-2" />
+                        @context.FirstName @context.LastName
+                    </Template>
+                </RadzenDropDown>
+            </EditTemplate>
+        </RadzenDataGridColumn> 
+        <RadzenDataGridColumn Property="@nameof(Product.Date)" Title="Date" Width="200px">
+            <Template Context="product">
+                @String.Format("{0:d}", product.Date)
+            </Template>
+            <EditTemplate Context="product">
+                <RadzenDatePicker @bind-Value="product.Date" Style="width:100%" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select product date" }})" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+         <RadzenDataGridColumn Property="@nameof(Order.Freight)" Title="Freight">
+            <Template Context="product">
+                @String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", product.Freight)
+            </Template>
+            <EditTemplate Context="product">
+                <RadzenNumeric @bind-Value="product.Freight" Style="width:100%" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select freight" }})" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(Order.ShipName)" Title="Ship Name">
+            <EditTemplate Context="product">
+                <RadzenTextBox @bind-Value="product.ShipName" Style="width:200px; display: block" Name="ShipName" aria-label="Enter ship name" />
+                <RadzenRequiredValidator Text="ShipName is required" Component="ShipName" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(Order.ShipCountry)" Title="ShipCountry">
+            <EditTemplate Context="product">
+                <RadzenTextBox @bind-Value="product.ShipCountry" Style="width:200px; display: block" Name="ShipCountry" aria-label="Enter ship country" />
+                <RadzenRequiredValidator Text="ShipCountry is required" Component="ShipCountry" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(Order.ShipCity)" Title="ShipCity">
+            <EditTemplate Context="product">
+                <RadzenTextBox @bind-Value="product.ShipCity" Style="width:200px; display: block" Name="ShipCity" aria-label="Enter ship city" />
+                <RadzenRequiredValidator Text="ShipCity is required" Component="ShipCity" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn> *@
+        <RadzenDataGridColumn Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+            <Template Context="item">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRowAsync(item))" @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(item))" @onclick:stopPropagation="true">
+                </RadzenButton>
+            </Template>
+            <EditTemplate Context="item">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(item))" aria-label="Save">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@((args) => CancelEdit(item))" aria-label="Cancel">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(item))" aria-label="Delete">
+                </RadzenButton>
             </EditTemplate>
         </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
+
+
 
