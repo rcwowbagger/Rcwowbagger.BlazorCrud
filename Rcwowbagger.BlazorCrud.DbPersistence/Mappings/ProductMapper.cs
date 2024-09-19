@@ -5,12 +5,9 @@ using System.Reflection;
 
 namespace Rcwowbagger.BlazorCrud.DbPersistence.Mappings;
 
-public static class ProductMapper
+public class ProductMapper : IMapper
 {
-
-    public static void ConfigureTaskMasterDtoMapping()
-    {
-        var columnPropertyMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    private static Dictionary<string, string> _columnPropertyMappings = new(StringComparer.OrdinalIgnoreCase)
         {
             { "product_id", "Id" },
             { "name", "Name" },
@@ -19,11 +16,20 @@ public static class ProductMapper
             { "date", "date" }
         };
 
+    private static HashSet<string> _defaults = new()
+    {
+        "product_id",
+        "Id"
+    };
+
+    public string TableName => "dbo.Products";
+    public void ConfigureMapping()
+    {
         SqlMapper.SetTypeMap(typeof(ProductDto), new CustomPropertyTypeMap(
             typeof(ProductDto),
             (type, columnName) =>
             {
-                if (columnPropertyMappings.TryGetValue(columnName, out var propertyName))
+                if (_columnPropertyMappings.TryGetValue(columnName, out var propertyName))
                 {
                     return type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
                 }
@@ -31,4 +37,7 @@ public static class ProductMapper
             }));
     }
 
+    public string InsertStatement => $"INSERT INTO {TableName} ({string.Join(",", _columnPropertyMappings.Keys.Where(x => !_defaults.Contains(x)))}) VALUES ({string.Join(",", _columnPropertyMappings.Values.Where(x => !_defaults.Contains(x)).Select(x => $"@{x}"))})";
+
+    public Type Accepts => typeof(ProductDto);
 }
