@@ -1,4 +1,4 @@
-﻿@page "/editable-grid"
+﻿@page "/product-grid"
 @using Rcwowbagger.BlazorCrud.Interfaces.Models
 
 @inherits EditableGridBase<ProductDto>
@@ -26,11 +26,33 @@
         <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Order" Click="@InsertRow" Disabled="@(editMode == DataGridEditMode.Single && ItemsToInsert.Any())" />
     </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn Property="ProductId" Title="Product Id" Width="120px" Frozen="true" ></RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="Name" Title="Name" Width="120px" ></RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="Price" Title="Price" Width="120px" ></RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="Quantity" Title="Quantity" Width="120px" ></RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="Date" Title="Date" Width="120px" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Id" Title="Product Id" Width="120px" Frozen="true" ></RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Name" Title="Name" Width="120px" >
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Name" Style="width:200px; display: block" Name="Name" aria-label="Enter name" />
+                <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Price" Title="Price" Width="120px" >
+            <EditTemplate Context="item">
+                <RadzenNumeric Name="Price" @bind-Value=@item.Price Style="display: block; width: 100%;" />
+                @* <RadzenNumericRangeValidator Component="Price" Min="0" Text="Price must be > 0" Popup=@popup Style="position: absolute" /> *@
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Quantity" Title="Quantity" Width="120px" >
+            <EditTemplate Context="item">
+                <RadzenNumeric Name="Quantity" @bind-Value=@item.Quantity Style="display: block; width: 100%;" />
+                @* <RadzenNumericRangeValidator Component="Quantity" Min="0" Text="Quantity must be > 0" Popup=@popup Style="position: absolute" /> *@
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="Date" Title="Date" Width="120px" >
+            <Template Context="item">
+                @String.Format("{0:d}", item.Date)
+            </Template>
+            <EditTemplate Context="item">
+                <RadzenDatePicker @bind-Value="item.Date" Style="width:100%" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select product date" }})" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
       @*   <RadzenDataGridColumn Property="Name" Title="Name" Width="280px">
             <EditTemplate Context="product">
                 <RadzenDropDown @bind-Value="product.Name" Data="@Products" TextProperty="@nameof(Product.Name)" ValueProperty="@nameof(Product.Name)" Style="width:100%; display: block;"

@@ -7,6 +7,7 @@ using Rcwowbagger.BlazorCrud.Components;
 using Rcwowbagger.BlazorCrud.DbPersistence;
 using Rcwowbagger.BlazorCrud.Interfaces;
 using Rcwowbagger.BlazorCrud.Services;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Rcwowbagger.BlazorCrud
@@ -18,6 +19,10 @@ namespace Rcwowbagger.BlazorCrud
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
 
             builder.Services
                 .AddAuthentication(MS_OIDC_SCHEME)
@@ -61,6 +66,8 @@ namespace Rcwowbagger.BlazorCrud
             builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSerilog();
 
             var app = builder.Build();
 
