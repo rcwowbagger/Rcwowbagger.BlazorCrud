@@ -5,8 +5,7 @@ using Radzen;
 using Rcwowbagger.BlazorCrud.Auth;
 using Rcwowbagger.BlazorCrud.Components;
 using Rcwowbagger.BlazorCrud.DbPersistence;
-using Rcwowbagger.BlazorCrud.Interfaces;
-using Rcwowbagger.BlazorCrud.Services;
+using Rcwowbagger.BlazorCrud.Shared.Interfaces;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -49,7 +48,7 @@ namespace Rcwowbagger.BlazorCrud
 
             builder.Services.AddCascadingAuthenticationState();
 
-            builder.Services.AddScoped<IDataRepository>((services) => new DatabaseRepository(services.GetService<IConfiguration>().GetSection("Database").Get<DatabaseSettings>()));
+            builder.Services.AddScoped<IDataRepository>((services) => new DatabaseRepo(services.GetService<IConfiguration>().GetSection("Database").Get<DatabaseSettings>()));
             builder.Services.AddRadzenComponents();
 
             builder.Services

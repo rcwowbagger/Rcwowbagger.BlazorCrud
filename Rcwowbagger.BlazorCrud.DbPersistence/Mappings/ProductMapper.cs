@@ -1,43 +1,38 @@
-﻿using Dapper;
-using Rcwowbagger.BlazorCrud.Interfaces.Models;
-using System.Reflection;
-
+﻿using Rcwowbagger.BlazorCrud.Shared.Models;
 
 namespace Rcwowbagger.BlazorCrud.DbPersistence.Mappings;
 
-public class ProductMapper : IMapper
+public class ProductMapper : AbstractMapper
 {
-    private static Dictionary<string, string> _columnPropertyMappings = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "product_id", "Id" },
-            { "name", "Name" },
-            { "price", "price" },
-            { "quantity", "quantity" },
-            { "date", "date" }
-        };
+    public override string TableName => "[dbo].[Products]";
+    public override Type Accepts => typeof(ProductDto);
 
-    private static HashSet<string> _defaults = new()
-    {
-        "product_id",
-        "Id"
-    };
-
-    public string TableName => "dbo.Products";
-    public void ConfigureMapping()
-    {
-        SqlMapper.SetTypeMap(typeof(ProductDto), new CustomPropertyTypeMap(
-            typeof(ProductDto),
-            (type, columnName) =>
+    public ProductMapper()
+        : base(columnPropertyMappings: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                if (_columnPropertyMappings.TryGetValue(columnName, out var propertyName))
-                {
-                    return type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-                }
-                return null;
-            }));
+                { "product_id", "Id" },
+                { "name", "Name" },
+                { "price", "price" },
+                { "quantity", "quantity" },
+                { "date", "date" }
+            },
+            keyColumns:
+            [
+                "product_id"
+            ],
+            columnsWithIdentity: new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "product_id"
+            })
+    {
     }
 
-    public string InsertStatement => $"INSERT INTO {TableName} ({string.Join(",", _columnPropertyMappings.Keys.Where(x => !_defaults.Contains(x)))}) VALUES ({string.Join(",", _columnPropertyMappings.Values.Where(x => !_defaults.Contains(x)).Select(x => $"@{x}"))})";
-
-    public Type Accepts => typeof(ProductDto);
+    public override void AssignIdentity(object obj, long? identity)
+    {
+        if (obj is not ProductDto product)
+        {
+            throw new InvalidCastException($"Object is not a {nameof(ProductDto)}");
+        }
+        product.Id = (int)(identity ?? 0);
+    }
 }

@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using Radzen.Blazor;
-using Rcwowbagger.BlazorCrud.Interfaces;
+using Rcwowbagger.BlazorCrud.Shared.Interfaces;
 
 namespace Rcwowbagger.BlazorCrud.Components.Pages;
 
 public class EditableGridBase<T> : ComponentBase where T : new()
 {
     [Inject] public IDataRepository RepositoryService { get; set; }
+    [CascadingParameter] protected Task<AuthenticationState>? AuthState { get; set; }
 
     internal RadzenDataGrid<T> ItemGrid;
     internal IEnumerable<T> Items;
+    internal string User = string.Empty;
+
+    internal int? IdValue { get; set; }
 
     internal DataGridEditMode editMode = DataGridEditMode.Single;
 
@@ -33,8 +38,12 @@ public class EditableGridBase<T> : ComponentBase where T : new()
     {
         await base.OnInitializedAsync();
 
+        var getTask = RepositoryService.GetAsync<T>();
+
+        await Task.WhenAll(getTask, AuthState);
 
         Items = await RepositoryService.GetAsync<T>();
+        User = (await AuthState).User.Identity?.Name ?? string.Empty;
     }
 
     protected async Task EditRowAsync(T item)
@@ -52,11 +61,11 @@ public class EditableGridBase<T> : ComponentBase where T : new()
     {
         Reset(item);
 
-        await RepositoryService.UpdateAsync(item, (t) => t.GetHashCode().ToString());
+        await RepositoryService.UpdateAsync(item);
 
     }
 
-    protected async Task SaveRow(T item)
+    protected async Task SaveRowAsync(T item)
     {
         await ItemGrid.UpdateRow(item);
     }
@@ -64,18 +73,10 @@ public class EditableGridBase<T> : ComponentBase where T : new()
     protected void CancelEdit(T item)
     {
         Reset(item);
-
         ItemGrid.CancelEditRow(item);
-
-        //var ProductEntry = dbContext.Entry(Product);
-        //if (ProductEntry.State == EntityState.Modified)
-        //{
-        //    ProductEntry.CurrentValues.SetValues(ProductEntry.OriginalValues);
-        //    ProductEntry.State = EntityState.Unchanged;
-        //}
     }
 
-    protected async Task DeleteRow(T item)
+    protected async Task DeleteRowAsync(T item)
     {
         Reset(item);
 
@@ -92,7 +93,7 @@ public class EditableGridBase<T> : ComponentBase where T : new()
         }
     }
 
-    protected async Task InsertRow()
+    protected async Task InsertRowAsync()
     {
         if (editMode == DataGridEditMode.Single)
         {
@@ -104,7 +105,7 @@ public class EditableGridBase<T> : ComponentBase where T : new()
         await ItemGrid.InsertRow(item);
     }
 
-    protected async Task OnCreateRow(T item)
+    protected async Task OnCreateRowAsync(T item)
     {
         RepositoryService.AddAsync(item);
         ItemsToInsert.Remove(item);

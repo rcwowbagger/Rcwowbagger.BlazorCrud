@@ -1,4 +1,4 @@
-﻿namespace Rcwowbagger.BlazorCrud.Interfaces.Models;
+﻿namespace Rcwowbagger.BlazorCrud.Shared.Models;
 
 public class ProductDto
 {

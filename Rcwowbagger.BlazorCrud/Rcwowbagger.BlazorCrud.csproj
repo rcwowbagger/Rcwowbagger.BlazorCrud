@@ -18,7 +18,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Rcwowbagger.BlazorCrud.DbPersistence\Rcwowbagger.BlazorCrud.DbPersistence.csproj" />
-	  <ProjectReference Include="..\Rcwowbagger.BlazorCrud.Interfaces\Rcwowbagger.BlazorCrud.Interfaces.csproj" />
 	  <ProjectReference Include="..\Rcwowbagger.BlazorCrud.Shared\Rcwowbagger.BlazorCrud.Shared.csproj" />
 	</ItemGroup>
 

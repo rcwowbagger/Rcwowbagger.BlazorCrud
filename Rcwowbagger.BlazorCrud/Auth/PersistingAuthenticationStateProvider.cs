@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Rcwowbagger.BlazorCrud.Shared;
+using Rcwowbagger.BlazorCrud.Shared.Models;
 
 namespace Rcwowbagger.BlazorCrud.Auth;
 
