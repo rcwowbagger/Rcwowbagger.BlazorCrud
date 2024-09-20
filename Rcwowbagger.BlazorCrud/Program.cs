@@ -2,8 +2,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Radzen;
+using Rcwowbagger.BlazorCrud.Auth;
 using Rcwowbagger.BlazorCrud.Components;
+using Rcwowbagger.BlazorCrud.DbPersistence;
+using Rcwowbagger.BlazorCrud.Interfaces;
 using Rcwowbagger.BlazorCrud.Services;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Rcwowbagger.BlazorCrud
@@ -15,6 +19,10 @@ namespace Rcwowbagger.BlazorCrud
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
 
             builder.Services
                 .AddAuthentication(MS_OIDC_SCHEME)
@@ -41,7 +49,7 @@ namespace Rcwowbagger.BlazorCrud
 
             builder.Services.AddCascadingAuthenticationState();
 
-            builder.Services.AddSingleton<ProductService>();
+            builder.Services.AddScoped<IDataRepository>((services) => new DatabaseRepository(services.GetService<IConfiguration>().GetSection("Database").Get<DatabaseSettings>()));
             builder.Services.AddRadzenComponents();
 
             builder.Services
@@ -58,6 +66,8 @@ namespace Rcwowbagger.BlazorCrud
             builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSerilog();
 
             var app = builder.Build();
 

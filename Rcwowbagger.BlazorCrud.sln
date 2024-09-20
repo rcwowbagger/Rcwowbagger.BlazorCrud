@@ -13,6 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rcwowbagger.BlazorCrud.Shar
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8AD76929-C38B-4021-9754-F2D8DCF5185F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rcwowbagger.BlazorCrudApi", "Rcwowbagger.BlazorCrudApi\Rcwowbagger.BlazorCrudApi.csproj", "{9333EB4B-9A41-464B-BBC4-72999DABFB1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{333C9D91-94D2-4DBA-ABBA-2273B087E416}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +42,10 @@ Global
 		{F7F714C5-1C82-447C-8C3D-B5A0C77BE0A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7F714C5-1C82-447C-8C3D-B5A0C77BE0A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7F714C5-1C82-447C-8C3D-B5A0C77BE0A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9333EB4B-9A41-464B-BBC4-72999DABFB1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9333EB4B-9A41-464B-BBC4-72999DABFB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9333EB4B-9A41-464B-BBC4-72999DABFB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9333EB4B-9A41-464B-BBC4-72999DABFB1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +55,7 @@ Global
 		{B56D3E3F-E971-4729-8D93-3ADCF932B039} = {8AD76929-C38B-4021-9754-F2D8DCF5185F}
 		{B3B11A9A-E7BE-4520-A32B-0D634AC5D70A} = {8AD76929-C38B-4021-9754-F2D8DCF5185F}
 		{F7F714C5-1C82-447C-8C3D-B5A0C77BE0A9} = {8AD76929-C38B-4021-9754-F2D8DCF5185F}
+		{9333EB4B-9A41-464B-BBC4-72999DABFB1C} = {8AD76929-C38B-4021-9754-F2D8DCF5185F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B9F1E49-5D8C-4373-A832-5F30A4773283}

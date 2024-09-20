@@ -1,0 +1,6 @@
+@Rcwowbagger.BlazorCrudApi_HostAddress = http://localhost:5157
+
+GET {{Rcwowbagger.BlazorCrudApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
